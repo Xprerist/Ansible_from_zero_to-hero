@@ -1,5 +1,5 @@
-192.168.1.31
-192.168.1.32
-192.168.1.33
-192.168.1.34
-192.168.1.35
+192.168.1.31 ansible_user=ansible1
+192.168.1.32 ansible_user=ansible2
+192.168.1.33 ansible_user=ansible3
+192.168.1.34 ansible_user=ansible4
+192.168.1.35 ansible_user=ansible5
