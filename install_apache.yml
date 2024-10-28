@@ -3,21 +3,13 @@
 - hosts: 192.168.1.31
   become: true
   tasks:
-
-    - name: update repository index
-      apt:
-        update_cache: yes
-      when: ansible_distribution in [" Debian", "Ubuntu"]
-      when: ansible_userspace_architecture in ["x86_64"]    
     
-    - name: install apache2 package
-      apt: 
-        name: apache2
-        state: latest  
-      when: ansible_distribution == "Ubuntu"    
+    - name: install apache2 package + php support for Ubuntu
+      package:                      # "package" is normore generic than "apt": generic OS package manager 
+        name: 
+          - "{{ apache_package }}"  # Variable added, see inventory file
+          - "{{ php_package }}"     # Variable added, see inventory file  
+        state: latest 
+        update_cache: yes 
+      when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]    
 
-    - name: add php support for apache
-      apt:
-        name: libapache2-mod-php
-        state: latest      
-      when: ansible_distribution == "Ubuntu"    
