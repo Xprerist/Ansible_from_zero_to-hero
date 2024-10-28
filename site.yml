@@ -1,0 +1,58 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+    
+    - name: install updates (Ubuntu)
+      package:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: install updates (CentOS)
+      package:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+
+
+- hosts: web_server                 # see "inventory" file             192.168.1.31 only
+  become: true
+  tasks:
+
+    - name: install apache2 package + php support for Ubuntu
+      package:                      # "package" is normore generic than "apt": generic OS package manager 
+        name: 
+          - "{{ apache_package }}"  # Variable added, see inventory file
+          - "{{ php_package }}"     # Variable added, see inventory file  
+        state: latest 
+        update_cache: yes 
+      when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]    
+
+
+
+- hosts: db_server                 # see "inventory" file             192.168.1.32 / 33 only
+  become: true
+  tasks:
+
+    - name: install mariadb package for Ubuntu
+      package:
+        name: mariadb-server
+        state: latest
+      when: ansible_distribution in ["Debian", "Ubuntu"]
+
+
+
+- hosts: file_server                 # see "inventory" file             192.168.1.34 / 35 only
+  become: true
+  tasks:
+
+    - name: install samba package
+      package:
+        name: samba
+        state: latest
+      when: ansible_distribution in ["Debian", "Ubuntu", "CentOS"]
+
+
