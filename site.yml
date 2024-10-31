@@ -18,6 +18,40 @@
         update_cache: yes
       when: ansible_distribution == "CentOS"
 
+- hosts: workstations
+  become: true
+  tasks:
+    
+    - name: install unzip
+      package: 
+        name: unzip
+
+    - name: Install Terraform on Workstations
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
+
+
+- hosts: proxmox
+  become: true
+  tasks:
+    
+    - name: install unzip
+      package: 
+        name: unzip
+
+    - name: Install Terraform on ProxMox
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
 
 
 - hosts: web_server                 # see "inventory" file             192.168.1.31 only
