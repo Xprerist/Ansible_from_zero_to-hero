@@ -34,7 +34,14 @@
         update_cache: yes 
       when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]    
 
-
+    - name: copy default html landing page
+      tags: landing_page,website
+      copy:
+        src: ./files/default_site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0744
 
 - hosts: db_server                 # see "inventory" file             192.168.1.32 / 33 only
   become: true
