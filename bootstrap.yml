@@ -1,0 +1,47 @@
+---
+
+- hosts: ansible
+  become: true
+  pre_tasks:
+    
+    - name: install updates (Ubuntu)
+      tags: always
+      package:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: install updates (CentOS)
+      tags: always
+      package:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+
+- hosts: ansible                               # add the User "Simone" to every Host, Prereq. for full Ansible automation
+  become: true
+  tasks:
+
+    - name: create simone user
+      tags: always
+      user:
+        name: simone
+        groups: root
+
+    - name: add sssh key for Simone
+      tags: always
+      authorized_key:
+        user: simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILcumVrymijfssOBJRgv37LVqV3JWiEDuiNKd5eTYZEX jens 2025"
+
+    - name: add sudoers file for simone
+      tags: always
+      copy:
+        src: sudoer_simone
+        dest: /etc/sudoers.d/simone
+        owner: root
+        group: root
+        mode: 0440
+
+
