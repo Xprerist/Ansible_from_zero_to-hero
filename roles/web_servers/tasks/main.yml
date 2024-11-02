@@ -1,0 +1,53 @@
+- name: install apache2 package + php support for Ubuntu
+  tags: apache,apache2,ubuntu
+  package:                      # "package" is normore generic than "apt": generic OS package manager
+    name:
+      - "{{ apache_package }}"  # Variable added, see inventory file
+      - "{{ php_package }}"     # Variable added, see inventory file
+    state: latest
+    update_cache: yes
+  when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]
+
+- name: install apache2 package + php support for CentOS # 1. This secton will install apache...
+  tags: apache,centos,httpd
+  dnf:                      # "package" is normore generic than "apt": generic OS package manager
+    name:
+      - httpd
+      - php
+    state: latest
+    update_cache: yes
+  when: ansible_distribution in ["CentOS"]
+
+- name: start httpd for CentOS (CentOS only)             # 2. ...and this section will start apache.
+  tags: apache,centos,httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  when: ansible_distribution in ["CentOS"]
+
+- name: change e-mail address for admin for CentOS (CentOS only)
+  tags: apache,centos,httpd
+  lineinfile:
+    path: /etc/httdp/conf/httpd.conf
+    regexp: '^Serveradmin'
+    line: ServerAdmin somebody@somewhere.net
+  when: ansible_distribution in ["CentOS"]
+  register: httpd                                        # A. This variable is a reference. Includes a state of change...
+
+- name: restart httpd (CentOS)
+  tags: apache,centos,httpd
+  service:
+    name: httpd
+    state: restarted
+  when: httpd.changed                                    # B. ...used here
+
+
+- name: copy default html landing page
+  tags: landing_page,website
+  copy:
+    src: ./files/default_site.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0744

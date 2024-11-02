@@ -1,6 +1,6 @@
-
 [proxmox]
-192.168.1.6
+# 192.168.1.6 ansible_user=root apache_package=apache2 php_package=libapache2-mod-php
+pve-1 ansible_host=192.168.1.6 ansible_user=root ansible_ssh_private_key_file=~/.ssh/jens_2025 ansible_python_interpreter=/usr/bin/python3 apache_package=apache2 php_package=libapache2-mod-php
 
 [ansible]
 192.168.1.31

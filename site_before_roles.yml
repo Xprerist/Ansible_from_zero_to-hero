@@ -1,0 +1,168 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+    
+    - name: install updates (Ubuntu)
+      tags: always
+      package:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: install updates (CentOS)
+      tags: always
+      package:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+
+- hosts: ansible                                # add the User "Simone" to every Host, Prereq. for full Ansible automation
+  become: true
+  tasks:
+
+    - name: create simone user
+      tags: always
+      user:
+        name: simone
+        groups: root
+
+    - name: add sssh key for Simone
+      tags: always
+      authorized_key:
+        user: simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILcumVrymijfssOBJRgv37LVqV3JWiEDuiNKd5eTYZEX jens 2025"
+
+    - name: add sudoers file for simone
+      tags: always
+      copy:
+        src: sudoer_simone
+        dest: /etc/sudoers.d/simone
+        owner: root
+        group: root
+        mode: 0440
+
+
+
+- hosts: workstations
+  become: true
+  tasks:
+    
+    - name: install unzip
+      package: 
+        name: unzip
+
+    - name: Install Terraform on Workstations
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
+
+
+- hosts: proxmox
+  become: true
+  tasks:
+    
+    - name: install unzip
+      package: 
+        name: unzip
+
+    - name: Install Terraform on ProxMox
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
+
+
+- hosts: web_server                 # see "inventory" file             192.168.1.31 only
+  tags: apache,apache2,ubuntu
+  become: true
+  tasks:
+
+    - name: install apache2 package + php support for Ubuntu
+      tags: apache,apache2,ubuntu
+      package:                      # "package" is normore generic than "apt": generic OS package manager 
+        name: 
+          - "{{ apache_package }}"  # Variable added, see inventory file
+          - "{{ php_package }}"     # Variable added, see inventory file  
+        state: latest 
+        update_cache: yes 
+      when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]    
+
+    - name: install apache2 package + php support for CentOS # 1. This secton will install apache...
+      tags: apache,centos,httpd
+      dnf:                      # "package" is normore generic than "apt": generic OS package manager 
+        name: 
+          - httpd
+          - php  
+        state: latest 
+        update_cache: yes 
+      when: ansible_distribution in ["CentOS"]     
+   
+    - name: start httpd for CentOS (CentOS only)             # 2. ...and this section will start apache.
+      tags: apache,centos,httpd
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_distribution in ["CentOS"]     
+
+    - name: change e-mail address for admin for CentOS (CentOS only)
+      tags: apache,centos,httpd
+      lineinfile: 
+        path: /etc/httdp/conf/httpd.conf
+        regexp: '^Serveradmin'
+        line: ServerAdmin somebody@somewhere.net
+      when: ansible_distribution in ["CentOS"]     
+      register: httpd                                        # A. This variable is a reference. Includes a state of change... 
+
+    - name: restart httpd (CentOS)
+      tags: apache,centos,httpd
+      service:
+        name: httpd
+        state: restarted
+      when: httpd.changed                                    # B. ...used here
+
+
+    - name: copy default html landing page
+      tags: landing_page,website
+      copy:
+        src: ./files/default_site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0744
+
+- hosts: db_server                 # see "inventory" file             192.168.1.32 / 33 only
+  become: true
+  tasks:
+
+    - name: install mariadb package for Ubuntu
+      tags: db,mariadb,ubuntu
+      package:
+        name: mariadb-server
+        state: latest
+      when: ansible_distribution in ["Debian", "Ubuntu"]
+
+
+
+- hosts: file_server                 # see "inventory" file             192.168.1.34 / 35 only
+  become: true
+  tasks:
+
+    - name: install samba package
+      tags: samba
+      package:
+        name: samba
+        state: latest
+      when: ansible_distribution in ["Debian", "Ubuntu", "CentOS"]
+
+

@@ -1,0 +1,36 @@
+- name: install unzip
+  package:
+    name: unzip
+
+- name: Install Terraform on ProxMox
+  tags: apache, apache2, proxmox, debian
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
+  when: ansible_distribution in ["Debian"] and ansible_virtualization_type != "lxc"
+
+
+- name: Install Apache2 and PHP for Proxmox host (Debian-based)
+  tags: apache, apache2, proxmox, debian
+  package:
+    name:
+      - "{{ apache_package }}"  # Variable defined in inventory for Proxmox host
+      - "{{ php_package }}"     # Variable defined in inventory for Proxmox host
+    state: latest
+    update_cache: yes
+  when: ansible_distribution in ["Debian"] and ansible_virtualization_type != "lxc"
+
+
+- name: Copy default HTML landing page for Proxmox host
+  tags: landing_page, website, proxmox
+  copy:
+    src: ./files/proxmox_landing_page.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0744'
+  when: ansible_virtualization_type != "lxc"      
