@@ -1,0 +1,4 @@
+- name: restart_apache                # 'name: restart_apache' is identical to roles/webservers_tasks/main.yml ...
+  service:                            # ...there is a tag 'notify: restart_apache'
+    name: "{{ apache_service }}"
+    state: restarted

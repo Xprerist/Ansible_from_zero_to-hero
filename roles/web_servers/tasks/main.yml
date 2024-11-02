@@ -2,8 +2,8 @@
   tags: apache,apache2,ubuntu
   package:                      # "package" is normore generic than "apt": generic OS package manager
     name:
-      - "{{ apache_package }}"  # Variable added, see inventory file
-      - "{{ php_package }}"     # Variable added, see inventory file
+      - "{{ apache_package_name }}"  # Variable added, see inventory file
+      - "{{ php_package_name }}"     # Variable added, see inventory file
     state: latest
     update_cache: yes
   when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_userspace_architecture in ["x86_64"]
@@ -26,21 +26,14 @@
     enabled: yes
   when: ansible_distribution in ["CentOS"]
 
-- name: change e-mail address for admin for CentOS (CentOS only)
+- name: notification of e-mail address change for admin for CentOS (CentOS only)
   tags: apache,centos,httpd
   lineinfile:
     path: /etc/httdp/conf/httpd.conf
     regexp: '^Serveradmin'
-    line: ServerAdmin somebody@somewhere.net
+    line: ServerAdmin somebody@somewhere.com
   when: ansible_distribution in ["CentOS"]
-  register: httpd                                        # A. This variable is a reference. Includes a state of change...
-
-- name: restart httpd (CentOS)
-  tags: apache,centos,httpd
-  service:
-    name: httpd
-    state: restarted
-  when: httpd.changed                                    # B. ...used here
+  notify: restart_apache                                # A. This variable is a reference. Includes a state of change...
 
 
 - name: copy default html landing page
