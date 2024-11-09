@@ -1,0 +1,47 @@
+<html>
+<!DOCTYPE html>
+<html lang="en">
+    <title>Web-site TEST</title>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Website with Ansible</title>
+</head>
+	<body>
+ 	<style>
+        	/* Inline CSS to style the heading */
+        	h1 {
+            		color: blue;      /* Set text color to blue */
+            		font-weight: bold; /* Make the text bold */
+        	}
+    	</style>
+        <h1>Hello {{ selected_name }}: {{ selected_title }}</h1>
+
+ 	<style>
+        	/* Inline CSS to style the heading */
+        	h2 {
+            		color: black;      /* Set text color to black */
+            		font-weight: bold; /* Make the text bold */
+        	}
+    	</style>
+	<h2>Welcome to my Ansible-automated Test-Webpage!</h2>
+	<h2>Ansible is awesome!</h2>
+	{{ selected_url }}
+
+ 	<style>
+        	/* Inline CSS to style the heading */
+        	h3 {
+            		color: green;      /* Set text color to green */
+            		font-weight: bold; /* Make the text bold */
+        	}
+    	</style>
+        <h3>Last update: {{ local_time }}</h2>
+        <h3>Your current location: Spiral galaxy, close to Andromeda Galaxy M31</h3> 
+	<h3>{{ time_zone }} </h3>
+
+	</body>
+</html>
+
+

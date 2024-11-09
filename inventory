@@ -1,6 +1,10 @@
 [proxmox]
 # 192.168.1.6 ansible_user=root apache_package=apache2 php_package=libapache2-mod-php
-pve-1 ansible_host=192.168.1.6 ansible_user=root ansible_ssh_private_key_file=~/.ssh/jens_2025 ansible_python_interpreter=/usr/bin/python3 apache_package=apache2 php_package=libapache2-mod-php
+pve-1 ansible_host=192.168.1.6 ansible_user=root ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/jens_2025 ansible_python_interpreter=/usr/bin/python3 apache_package=apache2 php_package=libapache2-mod-php
+
+[base]
+pve-1
+192.168.1.31
 
 [ansible]
 192.168.1.31
@@ -12,7 +16,8 @@ pve-1 ansible_host=192.168.1.6 ansible_user=root ansible_ssh_private_key_file=~/
 [workstations]
 
 [web_server]
-192.168.1.31 ansible_user=ansible1 apache_package=apache2 php_package=libapache2-mod-php
+192.168.1.31 ansible_user=ansible1 web_package=apache2 php_package=libapache2-mod-php
+192.168.1.32 ansible_user=ansible2 web_package=nginx php_package=php
 
 [db_server]
 192.168.1.32 ansible_user=ansible2
