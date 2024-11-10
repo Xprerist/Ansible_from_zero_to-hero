@@ -1,0 +1,50 @@
+---
+- name: Check variables from variables.ini
+  hosts: localhost, pve-1
+  tasks:
+    - name: Read variables from variables.ini
+      ansible.builtin.shell: cat ./variables.ini
+      register: result
+
+    - name: Display the result
+      ansible.builtin.debug:
+        var: result.stdout
+
+    - name: Get disk space usage
+      ansible.builtin.command: df -h
+      register: disk_usage
+
+    - name: Display disk usage
+      ansible.builtin.debug:
+        msg: "Disk usage is: {{ disk_usage.stdout }}"
+
+
+- name: Print DNS Server
+  hosts: web1
+  tasks:
+  - debug:
+      msg: "{{ hostvars['web2'].dns_server }}"    # Übegebe web1 die DNS-Server IP von web2
+
+
+- name: Print Facts from ProxMox
+  hosts: pve-1
+  gather_facts: no
+  tasks:
+  - debug:
+      var: ansible_facts                          # Print Ansible Facts from pve-1
+
+# ------------------------------------------------------------------------------------------
+# Ein einfaches Beipiel für Key_Value-Pairs
+
+- name: Einfaches Beispiel für Key-Value-Pair in Ansible
+  hosts: localhost
+  vars:
+    service_info:
+      name: "nginx"
+      status: "aktiv"
+  tasks:
+    - name: Dienstinformationen anzeigen
+      debug:
+        msg: "Der Dienst {{ service_info.name }} ist {{ service_info.status }}."
+
+          # ---------------------------------------------------------------------------------------------

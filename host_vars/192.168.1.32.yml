@@ -1,0 +1,5 @@
+apache_package_name: nginx
+apache_service: nginx
+php_package_name: libapache2-mod-php
+ssh_users: "jensi simone ansible2"
+ssh_template_file: sshd_config_ubuntu.j2  
