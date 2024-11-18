@@ -1,6 +1,7 @@
 ---
-- name: Check variables from variables.ini
-  hosts: localhost, pve-1
+- 
+  name: Check variables from variables.ini
+  hosts: localhost                         # Hosts must be defined in the inventory file
   tasks:
     - name: Read variables from variables.ini
       ansible.builtin.shell: cat ./variables.ini
@@ -19,14 +20,16 @@
         msg: "Disk usage is: {{ disk_usage.stdout }}"
 
 
-- name: Print DNS Server
+- 
+  name: Print DNS Server
   hosts: web1
   tasks:
   - debug:
       msg: "{{ hostvars['web2'].dns_server }}"    # Übegebe web1 die DNS-Server IP von web2
 
 
-- name: Print Facts from ProxMox
+- 
+  name: Print Facts from ProxMox
   hosts: pve-1
   gather_facts: no
   tasks:
@@ -36,7 +39,8 @@
 # ------------------------------------------------------------------------------------------
 # Ein einfaches Beipiel für Key_Value-Pairs
 
-- name: Einfaches Beispiel für Key-Value-Pair in Ansible
+- 
+  name: Einfaches Beispiel für Key-Value-Pair in Ansible
   hosts: localhost
   vars:
     service_info:
@@ -47,4 +51,4 @@
       debug:
         msg: "Der Dienst {{ service_info.name }} ist {{ service_info.status }}."
 
-          # ---------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------

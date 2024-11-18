@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: all                                    # Hosts must be defined in the inventory file
   vars_files:
     - variables
   become: true
